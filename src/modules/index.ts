@@ -1,0 +1,1 @@
+export { makeModule as makeAnchorModule } from './anchor';
