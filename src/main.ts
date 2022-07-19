@@ -1,5 +1,6 @@
 import { setupServer, startServer } from './shared/server';
 import { makeAnchorModule } from './modules';
+import { startDb } from './shared/db';
 
 async function main() {
   try {
@@ -8,7 +9,7 @@ async function main() {
     // instance modules
     makeAnchorModule(server);
 
-    // await startDb();
+    await startDb();
     startServer();
   } catch (err) {
     console.log(err);

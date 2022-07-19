@@ -1,0 +1,1 @@
+Ramping = a way to start and get into crypto.

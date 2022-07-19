@@ -9,6 +9,10 @@ if (!signingKey || !signingSecret) {
 }
 
 export const config = {
+	db: {
+		host: process.env.DB_HOST || 'mongodb',
+		dbName: process.env.DB_NAME || 'anchor',
+	},
 	auth: {
 		signingKey,
 		signingSecret,
