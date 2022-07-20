@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
+import { ITransaction, ITransactionInput, ITransactionModel } from '../../../types';
+import { RESOURCE_NOT_FOUND } from '../../../shared/errors';
 
-const schema = new mongoose.Schema({
+const MODEL_NAME = 'Transaction';
+
+const schema = new mongoose.Schema<ITransaction>({
 	// userId: { },
 	kind: { type: String, required: true, enum: ['deposit', 'withdraw'] },
 	asset_code: { type: String, required: true, enum: ['VEST', 'USDC'] },
 	account: { type: String, required: true },
 	amount: { type: Number },
 	on_change_callback: { type: String },
+	status: { type: String, enum: ['pending', 'confirmed', 'cancelled'] },
 
 	// for deposit only
-	invoiceId: { type: String },
+	invoiceId: { type: String, unique: true, notNull: true },
 
 	// for withdraw only
 	type: { type: String },
@@ -19,30 +24,35 @@ const schema = new mongoose.Schema({
 	{ versionKey: false, timestamps: true }
 );
 
-const mongooseModel = mongoose.model("Transaction", schema);
+const mongooseModel = mongoose.model<ITransaction>(MODEL_NAME, schema);
 
 function makeRepository() {
 	// TODO: add custom functions here like searchDepositByBankId
-	async function create(data: any) {
+	async function create(data: ITransactionInput) {
 		return mongooseModel.create(data);
 	}
 
 	async function getById(_id: string) {
-		return mongooseModel.findById(_id);
+		const doc = await mongooseModel.findById(_id);
+
+		if (!doc) throw RESOURCE_NOT_FOUND(MODEL_NAME);
+		return doc;
 	}
 
 	async function _update(_id: string, fields: any) {
-		return mongooseModel.findByIdAndUpdate(_id, fields, { new: true });
+		const doc = await mongooseModel.findByIdAndUpdate(_id, fields, { new: true });
+		if (!doc) throw RESOURCE_NOT_FOUND(MODEL_NAME);
+		return doc;
 	}
 
 	async function getMany(filter: any) {
-		return mongooseModel.find(filter);
+		return await mongooseModel.find(filter);
 	}
 
 	return { create, getById, _update, getMany };
 }
 
-export const TransactionModel = {
+export const TransactionModel: ITransactionModel = {
 	...makeRepository(),
 	mongooseModel
 };
