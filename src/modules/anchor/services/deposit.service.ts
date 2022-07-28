@@ -14,6 +14,7 @@ export function createService({ TransactionModel, bankService }: { TransactionMo
 		// check user limits
 
 
+		// TODO::Improvement: wrap into a db transaction
 		// For fiat anchored assets only
 		const invoice = await bankService.createInvoice();
 		// create transaction
@@ -37,7 +38,7 @@ export function createService({ TransactionModel, bankService }: { TransactionMo
 		if (!transaction) throw new Error('Transaction not found');
 
 		// // update transaction
-		await TransactionModel._update(transaction._id, { status: 'confirmed' });
+		const updatedTx = await TransactionModel._update(transaction._id, { status: 'confirmed' });
 
 		// // if webHook is set, call it
 		if (transaction.on_change_callback) {
@@ -46,15 +47,23 @@ export function createService({ TransactionModel, bankService }: { TransactionMo
 	}
 
 	async function callWebHook(url: string, transaction: ITransaction) {
+		console.debug('------- A ------ callWebHook', url);
+
+		// TODO: This data should be consistent with the returned by GET /Transaction
+
 		// call webHook
 		const data = {
+			id: transaction._id,
 			kind: transaction.kind,
 			asset_code: transaction.asset_code,
 			account: transaction.account,
 			amount: transaction.amount,
 			status: transaction.status,
 		};
-		await axios.post(url, data).catch(e => console.error('callWebHook error:', e));
+
+		axios.post(url, data) // TODO:: Improvement: Add X-Signature header so that the webhook can be verified
+			.then(({ data }) => console.debug(`webhook data for deposit ${transaction._id} confirmed`, data))
+			.catch(e => console.error(`callWebHook error: id: transaction._id`, e.message));
 	}
 
 	return { create, confirmPaymentReceived };

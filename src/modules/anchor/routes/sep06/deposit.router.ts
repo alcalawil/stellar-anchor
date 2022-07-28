@@ -4,6 +4,6 @@ import { deposit, confirmPaymentReceived } from '../../controllers/deposit.contr
 export const router = Router();
 
 router.get('/deposit', deposit);
-router.post('/deposit/confirm', confirmPaymentReceived);
+router.post('/deposit/paid', confirmPaymentReceived);
 
 export { router as depositRouter };

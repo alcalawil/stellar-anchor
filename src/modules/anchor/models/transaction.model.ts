@@ -14,7 +14,7 @@ const schema = new mongoose.Schema<ITransaction>({
 	status: { type: String, enum: ['pending', 'confirmed', 'cancelled'] },
 
 	// for deposit only
-	invoiceId: { type: String, unique: true, notNull: true },
+	invoiceId: { type: String, unique: true, sparse: true },
 
 	// for withdraw only
 	type: { type: String },
