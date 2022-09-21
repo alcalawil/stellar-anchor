@@ -7,7 +7,7 @@ const MODEL_NAME = 'Transaction';
 const schema = new mongoose.Schema<ITransaction>({
 	// userId: { },
 	kind: { type: String, required: true, enum: ['deposit', 'withdraw'] },
-	asset_code: { type: String, required: true, enum: ['VEST', 'USDC'] },
+	asset_code: { type: String, required: true, enum: ['MY_TOKEN', 'USDC'] },
 	account: { type: String, required: true },
 	amount: { type: Number },
 	on_change_callback: { type: String },

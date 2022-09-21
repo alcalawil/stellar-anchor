@@ -1,7 +1,7 @@
 {
   "name": "stellar-anchor",
   "version": "0.0.1",
-  "description": "Wallet backend",
+  "description": "Stellar Network Transfer Server",
   "main": "src/main.ts",
   "scripts": {
     "dev": "nodemon",
